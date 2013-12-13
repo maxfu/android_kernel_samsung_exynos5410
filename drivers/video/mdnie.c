@@ -10,6 +10,7 @@
 #include <linux/mutex.h>
 #include <linux/mm.h>
 #include <linux/device.h>
+#include <linux/miscdevice.h>
 #include <linux/backlight.h>
 #include <linux/platform_device.h>
 #include <linux/delay.h>
@@ -164,10 +165,10 @@ int s3c_mdnie_set_size(void)
 	return 0;
 }
 
-static int mdnie_send_sequence(struct mdnie_info *mdnie, const unsigned short *seq)
+static int mdnie_send_sequence(struct mdnie_info *mdnie, unsigned short *seq)
 {
 	int ret = 0, i = 0;
-	const unsigned short *wbuf = NULL;
+	unsigned short *wbuf = NULL;
 
 	if (IS_ERR_OR_NULL(seq)) {
 		dev_err(mdnie->dev, "mdnie sequence is null\n");
@@ -181,12 +182,12 @@ static int mdnie_send_sequence(struct mdnie_info *mdnie, const unsigned short *s
 
 	mutex_lock(&mdnie->dev_lock);
 
-	wbuf = seq;
+	wbuf = mdnie_sequence_hook(seq);
 
 	mdnie_mask();
 
 	while (wbuf[i] != END_SEQ) {
-		ret += mdnie_write(wbuf[i], wbuf[i+1]);
+		ret += mdnie_write(wbuf[i], mdnie_reg_hook(wbuf[i], wbuf[i+1]));
 		i += 2;
 	}
 
@@ -867,6 +868,10 @@ static int mdnie_set_pwm(struct mdnie_info *mdnie, unsigned int br)
 	return ret;
 }
 
+static struct miscdevice mdnie_device = {
+	.minor = MISC_DYNAMIC_MINOR,
+	.name = "mdnie",
+};
 
 static int mdnie_set_cabc_pwm(struct mdnie_info *mdnie, unsigned int br)
 {
@@ -954,6 +959,9 @@ static int mdnie_probe(struct platform_device *pdev)
 		ret = -EINVAL;
 		goto error2;
 	}
+
+	ret = misc_register(&mdnie_device);
+	init_intercept_control(&mdnie_device.this_device->kobj);
 
 	mdnie->scenario = UI_MODE;
 	mdnie->mode = STANDARD;
