@@ -2205,7 +2205,7 @@ static int mmc_blk_alloc_part(struct mmc_card *card,
  * For each partition enabled in EXT_CSD a block device will be allocatedi
  * to provide access to the partition.
  */
-#if 0 // unused
+
 static int mmc_blk_alloc_parts(struct mmc_card *card, struct mmc_blk_data *md)
 {
 	int idx, ret = 0;
@@ -2228,7 +2228,6 @@ static int mmc_blk_alloc_parts(struct mmc_card *card, struct mmc_blk_data *md)
 
 	return ret;
 }
-#endif
 
 static void mmc_blk_remove_req(struct mmc_blk_data *md)
 {
@@ -2455,6 +2454,9 @@ static int mmc_blk_probe(struct mmc_card *card)
 	pr_info("%s: %s %s %s %s\n",
 		md->disk->disk_name, mmc_card_id(card), mmc_card_name(card),
 		cap_str, md->read_only ? "(ro)" : "");
+
+	if (mmc_blk_alloc_parts(card, md))
+	goto out;
 
 	mmc_set_drvdata(card, md);
 	mmc_fixup_device(card, blk_fixups);
