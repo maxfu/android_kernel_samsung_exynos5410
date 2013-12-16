@@ -113,6 +113,10 @@ static struct lcd_info *g_lcd;
 
 extern void (*panel_touchkey_on)(void);
 
+extern void mdnie_update_brightness(int brightness, bool is_auto, bool force);
+
+extern void mdnie_update_brightness(int brightness, bool is_auto, bool force);
+
 static int s6e8fa0_write(struct lcd_info *lcd, const u8 *seq, u32 len)
 {
 	int ret;
@@ -963,6 +967,10 @@ static int update_brightness(struct lcd_info *lcd, u8 force)
 		dev_info(&lcd->ld->dev, "brightness=%d, bl=%d, candela=%d\n", \
 			brightness, lcd->bl, candela_table[lcd->bl]);
 	}
+
+	mdnie_update_brightness(brightness, lcd->auto_brightness, false);
+
+	mdnie_update_brightness(brightness, lcd->auto_brightness, false);
 
 	mutex_unlock(&lcd->bl_lock);
 
