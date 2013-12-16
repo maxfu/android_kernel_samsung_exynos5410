@@ -95,10 +95,6 @@ extern struct mdnie_info *g_mdnie;
 int s3c_mdnie_hw_init(void);
 int s3c_mdnie_set_size(void);
 
-void init_intercept_control(struct kobject *kobj);
-unsigned short mdnie_reg_hook(unsigned short reg, unsigned short value);
-unsigned short *mdnie_sequence_hook(unsigned short *seq);
-
 extern int mdnie_calibration(unsigned short x, unsigned short y, int *r);
 extern int mdnie_request_firmware(const char *path, u16 **buf, const char *name);
 extern int mdnie_open_file(const char *path, char **fp);
