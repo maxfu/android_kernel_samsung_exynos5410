@@ -928,6 +928,11 @@ static const struct backlight_ops mdnie_backlight_ops = {
 };
 #endif
 
+static struct miscdevice mdnie_device = {
+	.minor = MISC_DYNAMIC_MINOR,
+	.name = "mdnie",
+};
+
 static int mdnie_probe(struct platform_device *pdev)
 {
 	int ret = 0;
