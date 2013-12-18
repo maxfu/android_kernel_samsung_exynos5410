@@ -94,7 +94,11 @@ IMG_VOID SysSGXIdleTransition(IMG_BOOL bSGXIdle)
 			}
 			{
 				pm_qos_update_request(&exynos5_g3d_int_qos, 200000);
+				#ifdef CONFIG_PVR_SGX_PERSEUS_DVFS
 				if (sgx_dvfs_level > 5)
+				#else
+				if(sgx_dvfs_level > 2)
+				#endif
 					pm_qos_update_request(&exynos5_g3d_mif_qos, 267000);
 				else
 					pm_qos_update_request(&exynos5_g3d_mif_qos, 800000);

@@ -27,6 +27,13 @@ config PVR_SGX_DVFS
 	help
 	  This enables DVFS for SGX.
 
+config PVR_SGX_PERSEUS_DVFS
+	bool "Enables Perseus DVFS for SGX"
+	depends on PVR_SGX
+	default n
+	help
+	  This enables Perseus DVFS for SGX.
+
 config PVR_SGX_FENCE_SYNC
 	bool "Enables Android Native fence sync for SGX"
 	depends on PVR_SGX
