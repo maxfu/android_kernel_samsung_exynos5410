@@ -186,7 +186,7 @@ pvrsrvkm-$(CONFIG_SOC_EXYNOS5410) += \
 	services4/system/exynos5410/sec_clock.o
 
 ifeq ($(CONFIG_SOC_EXYNOS5410),y)
-ifeq ($(CONFIG_PVR_SGX_PERSEUS_DVFS),y)
+ifeq ($(CONFIG_EXYNOS5410_TURBO_CHARGED),y)
 	pvrsrvkm-$(CONFIG_PVR_SGX_DVFS) += \
 	services4/system/exynos5410/secutils.o \
 	services4/system/exynos5410/perseus_dvfs.o

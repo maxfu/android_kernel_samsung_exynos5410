@@ -3140,7 +3140,7 @@ static struct vpll_div_data exynos5_vpll_div[] = {
 	{440000000, 3, 220, 2, 0, 0,  0, 0},
 	{480000000, 3, 240, 2, 0, 0,  0, 0},
 	{532000000, 3, 133, 1, 0, 0,  0, 0},
-#ifdef CONFIG_PVR_SGX_PERSEUS_DVFS
+#ifdef CONFIG_EXYNOS5410_TURBO_CHARGED
 	{600000000, 2, 100, 1, 0, 0,  0, 0},
 	{640000000, 3, 160, 1, 0, 0,  0, 0},
 	{700000000, 3, 175, 1, 0, 0,  0, 0},
