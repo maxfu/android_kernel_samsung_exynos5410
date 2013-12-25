@@ -831,15 +831,7 @@ static void __init set_volt_table_CA7(void)
 		#endif
 	}
 
-	#ifdef CONFIG_EXYNOS5410_TURBO_CHARGED
 	min_support_idx_CA7 = L11;
-	#else
-	exynos5410_freq_table_CA7[L9].frequency = CPUFREQ_ENTRY_INVALID;
-	exynos5410_freq_table_CA7[L10].frequency = CPUFREQ_ENTRY_INVALID;
-	exynos5410_freq_table_CA7[L11].frequency = CPUFREQ_ENTRY_INVALID;
-
-	min_support_idx_CA7 = L8;
-	#endif
 }
 
 static void __init set_volt_table_CA15(void)
@@ -902,13 +894,7 @@ static void __init set_volt_table_CA15(void)
 		exynos5410_freq_table_CA15[L17].frequency = CPUFREQ_ENTRY_INVALID;
 		exynos5410_freq_table_CA15[L18].frequency = CPUFREQ_ENTRY_INVALID;
 
-		#ifdef CONFIG_EXYNOS5410_TURBO_CHARGED
 		min_support_idx_CA15 = L13;
-		#else
-		exynos5410_freq_table_CA15[L13].frequency = CPUFREQ_ENTRY_INVALID;
-
-		min_support_idx_CA15 = L12;
-		#endif
 	}
 }
 

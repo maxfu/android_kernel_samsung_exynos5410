@@ -67,7 +67,7 @@ static unsigned int freq_max[CA_END] __read_mostly;	/* Maximum (Big/Little) cloc
 #define STEP_LEVEL_CA15_MIN	700000
 #else
 #define STEP_LEVEL_CA7_MAX	600000
-#define STEP_LEVEL_CA15_MIN	800000
+#define STEP_LEVEL_CA15_MIN	700000
 #endif
 
 #define LIMIT_COLD_VOLTAGE	1250000
