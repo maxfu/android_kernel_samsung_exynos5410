@@ -40,7 +40,7 @@
 #define DOWN_REQUIREMENT_THRESHOLD	3
 #ifdef USING_532MHZ
 #define GPU_DVFS_MAX_LEVEL		5
-exite#else
+#else
 #define GPU_DVFS_MAX_LEVEL		4
 #endif
 
