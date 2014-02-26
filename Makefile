@@ -370,7 +370,7 @@ KBUILD_CFLAGS   := -Wall -Wundef -Wstrict-prototypes -Wno-trigraphs \
 		   -Wno-format-security -Wno-unused \
 		   -fno-strict-aliasing -fno-common \
 		   -fno-delete-null-pointer-checks -ffast-math -pipe \
-		   -marm -mtune=cortex-a15 -mfpu=neon-vfpv4 -mfloat-abi=hard \
+		   -marm -mtune=cortex-a15 -mfpu=neon-vfpv4 \
 		   --sysroot=$(SYSROOT)
 
 KBUILD_AFLAGS_KERNEL :=
