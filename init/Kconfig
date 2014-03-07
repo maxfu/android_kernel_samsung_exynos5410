@@ -610,7 +610,6 @@ config CGROUP_FREEZER
 
 config CGROUP_TIMER_SLACK
 	bool "Timer slack cgroup controller"
-	default y
 	help
 	  Provides a way to set minimal timer slack value for tasks in
 	  a cgroup.
