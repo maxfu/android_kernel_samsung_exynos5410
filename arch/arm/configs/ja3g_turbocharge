@@ -1,0 +1,5 @@
+# maxfu turbocharge settings
+
+CONFIG_EXYNOS5410_TURBO_CHARGED=y
+# CONFIG_WQ_POWER_EFFICIENT_DEFAULT is not set
+
