@@ -1,4 +1,5 @@
-# ja3g_chn_opensettings
+# ja3g_chn_open settings
+
 CONFIG_MACH_J_CHN_OPEN=y
 CONFIG_TARGET_LOCALE_CHN=y
 CONFIG_WLAN_REGION_CODE=300
