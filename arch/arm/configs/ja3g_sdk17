@@ -1,3 +1,6 @@
 # ja3g_sdk17 settings
 
+#
+# Wifi features
+#
 CONFIG_BCM4335=m
