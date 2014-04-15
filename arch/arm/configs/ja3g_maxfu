@@ -57,6 +57,8 @@ CONFIG_KSM=y
 # Boot options
 #
 CONFIG_CMDLINE="console=ttySAC2,115200n8 vmalloc=512M androidboot.console=ttySAC2 androidboot.selinux=permissive"
+# CONFIG_CMDLINE_FROM_BOOTLOADER is not set
+CONFIG_CMDLINE_EXTEND=y
 #
 # CPU Frequency scaling
 #
