@@ -95,6 +95,12 @@ static void sec_reboot(char str, const char *cmd)
 		else if (!strcmp(cmd, "recovery"))
 			writel(REBOOT_MODE_PREFIX | REBOOT_MODE_RECOVERY,
 			       EXYNOS_INFORM3);
+		else if (!strcmp(cmd, "rec"))
+			writel(REBOOT_MODE_PREFIX | REBOOT_MODE_RECOVERY,
+			       EXYNOS_INFORM3);
+		else if (!strcmp(cmd, "re"))
+			writel(REBOOT_MODE_PREFIX | REBOOT_MODE_RECOVERY,
+			       EXYNOS_INFORM3);
 		else if (!strcmp(cmd, "download"))
 			writel(REBOOT_MODE_PREFIX | REBOOT_MODE_DOWNLOAD,
 			       EXYNOS_INFORM3);
