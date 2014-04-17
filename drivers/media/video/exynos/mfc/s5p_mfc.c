@@ -1149,6 +1149,13 @@ static irqreturn_t s5p_mfc_irq(int irq, void *priv)
 
 	/* Reset the timeout watchdog */
 	atomic_set(&dev->watchdog_cnt, 0);
+
+	if ((s5p_mfc_get_clk_ref_cnt() == 0) ||
+			(s5p_mfc_get_power_ref_cnt() == 0)) {
+		mfc_err("Not available to access MFC H/W\n");
+		goto irq_cleanup_err;
+
+	}
 	/* Get the reason of interrupt and the error code */
 	reason = s5p_mfc_get_int_reason();
 	err = s5p_mfc_get_int_err();
@@ -1381,6 +1388,8 @@ irq_cleanup_hw:
 
 	if (dev)
 		queue_work(dev->sched_wq, &dev->sched_work);
+
+irq_cleanup_err:
 
 	mfc_debug(2, "via irq_cleanup_hw\n");
 	return IRQ_HANDLED;
