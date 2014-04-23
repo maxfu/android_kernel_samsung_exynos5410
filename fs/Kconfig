@@ -295,6 +295,4 @@ config ASYNC_FSYNC
 	bool "asynchronous fsync"
 	default y
 
-source "fs/j4fs/Kconfig"
-
 endmenu
