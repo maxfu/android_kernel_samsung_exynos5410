@@ -1,5 +1,6 @@
 # ja3g_sdk17 settings
 
+<<<<<<< HEAD
 #
 # Boot options
 #
@@ -7,4 +8,6 @@ CONFIG_CMDLINE="console=ttySAC2,115200n8 vmalloc=512M androidboot.console=ttySAC
 #
 # Wifi features
 #
+=======
+>>>>>>> parent of 95d1577... sec-reboot: added an odin mode which is will in fact lead to download. In case someone forget download just like me.
 CONFIG_BCM4335=m
