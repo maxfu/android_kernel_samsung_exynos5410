@@ -8,14 +8,13 @@
  * published by the Free Software Foundation.
  */
 
-#include <linux/export.h>
 #include <linux/kernel.h>
 #include <linux/platform_device.h>
 #include <linux/io.h>
 #include <linux/spinlock.h>
 #include <mach/regs-clock.h>
 
-static int __s5p_mipi_phy_control(int phy_id,
+static int __s5p_mipi_phy_control(struct platform_device *pdev,
 				  bool on, u32 reset)
 {
 	static DEFINE_SPINLOCK(lock);
@@ -24,7 +23,10 @@ static int __s5p_mipi_phy_control(int phy_id,
 	int pid;
 	u32 cfg;
 
-	pid = (phy_id == -1) ? 0 : phy_id;
+	if (!pdev)
+		return -EINVAL;
+
+	pid = (pdev->id == -1) ? 0 : pdev->id;
 
 	if (pid != 0 && pid != 1 && pid != 2)
 		return -EINVAL;
@@ -50,14 +52,12 @@ static int __s5p_mipi_phy_control(int phy_id,
 	return 0;
 }
 
-int s5p_csis_phy_enable(int id, bool on)
+int s5p_csis_phy_enable(struct platform_device *pdev, bool on)
 {
-	return __s5p_mipi_phy_control(id, on, S5P_MIPI_DPHY_SRESETN);
+	return __s5p_mipi_phy_control(pdev, on, S5P_MIPI_DPHY_SRESETN);
 }
-EXPORT_SYMBOL(s5p_csis_phy_enable);
 
-int s5p_dsim_phy_enable(int id, bool on)
+int s5p_dsim_phy_enable(struct platform_device *pdev, bool on)
 {
-	return __s5p_mipi_phy_control(id, on, S5P_MIPI_DPHY_MRESETN);
+	return __s5p_mipi_phy_control(pdev, on, S5P_MIPI_DPHY_MRESETN);
 }
-EXPORT_SYMBOL(s5p_dsim_phy_enable);

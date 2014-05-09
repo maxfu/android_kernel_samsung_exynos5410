@@ -1304,8 +1304,6 @@ int fimc_is_runtime_suspend(struct device *dev)
 	if (core->mem.alloc_ctx)
 		vb2_ion_detach_iommu(core->mem.alloc_ctx);
 #endif
-	/* 1. Enable MIPI */
-	enable_mipi(false);
 
 	if (core->pdata->clk_off) {
 		core->pdata->clk_off(core->pdev);
@@ -1331,7 +1329,7 @@ int fimc_is_runtime_resume(struct device *dev)
 	pr_info("FIMC_IS runtime resume\n");
 
 	/* 1. Enable MIPI */
-	enable_mipi(true);
+	enable_mipi();
 
 	printk(KERN_INFO "FIMC_IS runtime resume - mipi enabled\n");
 

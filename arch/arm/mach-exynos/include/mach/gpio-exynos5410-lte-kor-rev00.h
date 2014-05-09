@@ -203,7 +203,7 @@
 #endif
 #define	GPIO_MLCD_RST			EXYNOS5410_GPJ1(0)
 #if !defined(CONFIG_MACH_JA_KOR_SKT) \
-    && !defined(CONFIG_MACH_JA_KOR_KT) \
+    && !defined(CONFIG_MACH_JA_KOR_KTT) \
     && !defined(CONFIG_MACH_JA_KOR_LGT)
 #define	GPIO_SUB_MICBIAS_EN		EXYNOS5410_GPJ1(1)
 #endif
