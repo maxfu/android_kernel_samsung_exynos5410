@@ -62,17 +62,10 @@ static unsigned int freq_max[CA_END] __read_mostly;	/* Maximum (Big/Little) cloc
  * This value is based on the difference between the dmips value of A15/A7
  * It is used to revise cpu frequency when changing cluster
  */
-#ifdef CONFIG_EXYNOS5410_TURBO_CHARGED
-#define STEP_LEVEL_CA7_MAX	650000
-#define STEP_LEVEL_CA15_MIN	700000
-static unsigned int step_level_CA7_max = 650000;
-static unsigned int step_level_CA15_min = 700000;
-#else
 #define STEP_LEVEL_CA7_MAX	600000
 #define STEP_LEVEL_CA15_MIN	700000
 static unsigned int step_level_CA7_max = 600000;
 static unsigned int step_level_CA15_min = 700000;
-#endif
 
 #define LIMIT_COLD_VOLTAGE	1250000
 #define COLD_VOLTAGE_OFFSET	75000

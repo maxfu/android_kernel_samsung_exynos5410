@@ -811,8 +811,10 @@ static void __init set_volt_table_CA7(void)
 				exynos5410_volt_table_CA7[i]);
 	}
 
+	max_support_idx_CA7 = L1;
+
+	exynos5410_freq_table_CA7[L0].frequency = CPUFREQ_ENTRY_INVALID;
 	if (samsung_rev() < EXYNOS5410_REV_2_0) {
-		exynos5410_freq_table_CA7[L0].frequency = CPUFREQ_ENTRY_INVALID;
 		exynos5410_freq_table_CA7[L1].frequency = CPUFREQ_ENTRY_INVALID;
 		exynos5410_freq_table_CA7[L2].frequency = CPUFREQ_ENTRY_INVALID;
 		exynos5410_freq_table_CA7[L3].frequency = CPUFREQ_ENTRY_INVALID;
@@ -821,14 +823,6 @@ static void __init set_volt_table_CA7(void)
 		exynos5410_freq_table_CA7[L6].frequency = CPUFREQ_ENTRY_INVALID;
 
 		max_support_idx_CA7 = L7;
-	} else {
-		#ifdef CONFIG_EXYNOS5410_TURBO_CHARGED
-		max_support_idx_CA7 = L0;
-		#else
-		exynos5410_freq_table_CA7[L0].frequency = CPUFREQ_ENTRY_INVALID;
-
-		max_support_idx_CA7 = L1;
-		#endif
 	}
 
 	min_support_idx_CA7 = L11;
@@ -855,11 +849,13 @@ static void __init set_volt_table_CA15(void)
 				exynos5410_volt_table_CA15[i]);
 	}
 
+	max_support_idx_CA15 = L4;
+
+	exynos5410_freq_table_CA15[L0].frequency = CPUFREQ_ENTRY_INVALID;
+	exynos5410_freq_table_CA15[L1].frequency = CPUFREQ_ENTRY_INVALID;
+	exynos5410_freq_table_CA15[L2].frequency = CPUFREQ_ENTRY_INVALID;
+	exynos5410_freq_table_CA15[L3].frequency = CPUFREQ_ENTRY_INVALID;
 	if (samsung_rev() < EXYNOS5410_REV_2_0) {
-		exynos5410_freq_table_CA15[L0].frequency = CPUFREQ_ENTRY_INVALID;
-		exynos5410_freq_table_CA15[L1].frequency = CPUFREQ_ENTRY_INVALID;
-		exynos5410_freq_table_CA15[L2].frequency = CPUFREQ_ENTRY_INVALID;
-		exynos5410_freq_table_CA15[L3].frequency = CPUFREQ_ENTRY_INVALID;
 		exynos5410_freq_table_CA15[L4].frequency = CPUFREQ_ENTRY_INVALID;
 		exynos5410_freq_table_CA15[L5].frequency = CPUFREQ_ENTRY_INVALID;
 		exynos5410_freq_table_CA15[L6].frequency = CPUFREQ_ENTRY_INVALID;
@@ -868,18 +864,6 @@ static void __init set_volt_table_CA15(void)
 		exynos5410_freq_table_CA15[L9].frequency = CPUFREQ_ENTRY_INVALID;
 
 		max_support_idx_CA15 = L10;
-	} else {
-		#ifdef CONFIG_EXYNOS5410_TURBO_CHARGED
-		max_support_idx_CA15 = L0;
-		#else
-		exynos5410_freq_table_CA15[L0].frequency = CPUFREQ_ENTRY_INVALID;
-		exynos5410_freq_table_CA15[L1].frequency = CPUFREQ_ENTRY_INVALID;
-		exynos5410_freq_table_CA15[L2].frequency = CPUFREQ_ENTRY_INVALID;
-		exynos5410_freq_table_CA15[L3].frequency = CPUFREQ_ENTRY_INVALID;
-
-
-		max_support_idx_CA15 = L4;
-		#endif
 	}
 
 	if (samsung_rev() < EXYNOS5410_REV_2_0) {

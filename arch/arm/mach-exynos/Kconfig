@@ -106,13 +106,6 @@ config SOC_EXYNOS5410
 	help
 	  Enable EXYNOS5410 SoC support
 
-config EXYNOS5410_TURBO_CHARGED
-	bool "EXYNOS5410 Overclock"
-	depends on SOC_EXYNOS5410
-	default n
-	help
-	  This enables overclock of CPU and GPU for EXYNOS5410.
-
 config EXYNOS4_MCT
 	bool
 	default y

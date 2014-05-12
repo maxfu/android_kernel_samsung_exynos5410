@@ -420,18 +420,14 @@ int blk_alloc_devt(struct hd_struct *part, dev_t *devt)
 	do {
 		if (!idr_pre_get(&ext_devt_idr, GFP_KERNEL))
 			return -ENOMEM;
-		mutex_lock(&ext_devt_mutex);
 		rc = idr_get_new(&ext_devt_idr, part, &idx);
-		mutex_unlock(&ext_devt_mutex);
 	} while (rc == -EAGAIN);
 
 	if (rc)
 		return rc;
 
 	if (idx > MAX_EXT_DEVT) {
-		mutex_lock(&ext_devt_mutex);
 		idr_remove(&ext_devt_idr, idx);
-		mutex_unlock(&ext_devt_mutex);
 		return -EBUSY;
 	}
 
@@ -669,6 +665,7 @@ void del_gendisk(struct gendisk *disk)
 	disk_part_iter_exit(&piter);
 
 	invalidate_partition(disk, 0);
+	blk_free_devt(disk_to_dev(disk)->devt);
 	set_capacity(disk, 0);
 	disk->flags &= ~GENHD_FL_UP;
 
@@ -686,7 +683,6 @@ void del_gendisk(struct gendisk *disk)
 	if (!sysfs_deprecated)
 		sysfs_remove_link(block_depr, dev_name(disk_to_dev(disk)));
 	device_del(disk_to_dev(disk));
-	blk_free_devt(disk_to_dev(disk)->devt);
 }
 EXPORT_SYMBOL(del_gendisk);
 
@@ -1526,11 +1522,9 @@ static void __disk_unblock_events(struct gendisk *disk, bool check_now)
 	intv = disk_events_poll_jiffies(disk);
 	set_timer_slack(&ev->dwork.timer, intv / 4);
 	if (check_now)
-		queue_delayed_work(system_freezable_power_efficient_wq,
-				&ev->dwork, 0);
+		queue_delayed_work(system_nrt_freezable_wq, &ev->dwork, 0);
 	else if (intv)
-		queue_delayed_work(system_freezable_power_efficient_wq,
-				&ev->dwork, intv);
+		queue_delayed_work(system_nrt_freezable_wq, &ev->dwork, intv);
 out_unlock:
 	spin_unlock_irqrestore(&ev->lock, flags);
 }
@@ -1574,8 +1568,7 @@ void disk_flush_events(struct gendisk *disk, unsigned int mask)
 	ev->clearing |= mask;
 	if (!ev->block) {
 		cancel_delayed_work(&ev->dwork);
-		queue_delayed_work(system_freezable_power_efficient_wq,
-				&ev->dwork, 0);
+		queue_delayed_work(system_nrt_freezable_wq, &ev->dwork, 0);
 	}
 	spin_unlock_irq(&ev->lock);
 }
@@ -1652,8 +1645,7 @@ static void disk_events_workfn(struct work_struct *work)
 
 	intv = disk_events_poll_jiffies(disk);
 	if (!ev->block && intv)
-		queue_delayed_work(system_freezable_power_efficient_wq,
-				&ev->dwork, intv);
+		queue_delayed_work(system_nrt_freezable_wq, &ev->dwork, intv);
 
 	spin_unlock_irq(&ev->lock);
 

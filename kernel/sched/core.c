@@ -1422,13 +1422,12 @@ ttwu_do_wakeup(struct rq *rq, struct task_struct *p, int wake_flags)
 
 	if (rq->idle_stamp) {
 		u64 delta = rq->clock - rq->idle_stamp;
-		u64 max = 2*rq->max_idle_balance_cost;
+		u64 max = 2*sysctl_sched_migration_cost;
 
-		update_avg(&rq->avg_idle, delta);
-
-		if (rq->avg_idle > max)
+		if (delta > max)
 			rq->avg_idle = max;
-
+		else
+			update_avg(&rq->avg_idle, delta);
 		rq->idle_stamp = 0;
 	}
 #endif
@@ -1655,13 +1654,8 @@ static void try_to_wake_up_local(struct task_struct *p)
 {
 	struct rq *rq = task_rq(p);
 
-	if (rq != this_rq() || p == current) {
-		printk_sched("%s: Failed to wakeup task %d (%s), rq = %p, this_rq = %p, p = %p, current = %p\n",
-			__func__, task_pid_nr(p), p->comm, rq,
-			this_rq(), p, current);
-		return;
-	}
-
+	BUG_ON(rq != this_rq());
+	BUG_ON(p == current);
 	lockdep_assert_held(&rq->lock);
 
 	if (!raw_spin_trylock(&p->pi_lock)) {
@@ -5842,23 +5836,18 @@ static void destroy_sched_domains(struct sched_domain *sd, int cpu)
  * two cpus are in the same cache domain, see cpus_share_cache().
  */
 DEFINE_PER_CPU(struct sched_domain *, sd_llc);
-DEFINE_PER_CPU(int, sd_llc_size);
 DEFINE_PER_CPU(int, sd_llc_id);
 
 static void update_top_cache_domain(int cpu)
 {
 	struct sched_domain *sd;
 	int id = cpu;
-	int size = 1;
 
 	sd = highest_flag_domain(cpu, SD_SHARE_PKG_RESOURCES);
-	if (sd) {
+	if (sd)
 		id = cpumask_first(sched_domain_span(sd));
-		size = cpumask_weight(sched_domain_span(sd));
-	}
 
 	rcu_assign_pointer(per_cpu(sd_llc, cpu), sd);
-	per_cpu(sd_llc_size, cpu) = size;
 	per_cpu(sd_llc_id, cpu) = id;
 }
 
@@ -6138,7 +6127,7 @@ build_sched_groups(struct sched_domain *sd, int cpu)
 	get_group(cpu, sdd, &sd->groups);
 	atomic_inc(&sd->groups->ref);
 
-	if (cpu != cpumask_first(span))
+	if (cpu != cpumask_first(sched_domain_span(sd)))
 		return 0;
 
 	lockdep_assert_held(&sched_domains_mutex);
@@ -6148,12 +6137,12 @@ build_sched_groups(struct sched_domain *sd, int cpu)
 
 	for_each_cpu(i, span) {
 		struct sched_group *sg;
-		int group, j;
+		int group = get_group(i, sdd, &sg);
+		int j;
 
 		if (cpumask_test_cpu(i, covered))
 			continue;
 
-		group = get_group(i, sdd, &sg);
 		cpumask_clear(sched_group_cpus(sg));
 		sg->sgp->power = 0;
 
@@ -6190,7 +6179,7 @@ static void init_sched_groups_power(int cpu, struct sched_domain *sd)
 {
 	struct sched_group *sg = sd->groups;
 
-	WARN_ON(!sg);
+	WARN_ON(!sd || !sg);
 
 	do {
 		sg->group_weight = cpumask_weight(sched_group_cpus(sg));
@@ -6449,8 +6438,9 @@ static void __sdt_free(const struct cpumask *cpu_map)
 }
 
 struct sched_domain *build_sched_domain(struct sched_domain_topology_level *tl,
-		const struct cpumask *cpu_map, struct sched_domain_attr *attr,
-		struct sched_domain *child, int cpu)
+		struct s_data *d, const struct cpumask *cpu_map,
+		struct sched_domain_attr *attr, struct sched_domain *child,
+		int cpu)
 {
 	struct sched_domain *sd = tl->init(tl, cpu);
 	if (!sd)
@@ -6490,14 +6480,17 @@ static int build_sched_domains(const struct cpumask *cpu_map,
 
 		sd = NULL;
 		for (tl = sched_domain_topology; tl->init; tl++) {
-			sd = build_sched_domain(tl, cpu_map, attr, sd, i);
-			if (tl == sched_domain_topology)
-				*per_cpu_ptr(d.sd, i) = sd;
+			sd = build_sched_domain(tl, &d, cpu_map, attr, sd, i);
 			if (tl->flags & SDTL_OVERLAP || sched_feat(FORCE_SD_OVERLAP))
 				sd->flags |= SD_OVERLAP;
 			if (cpumask_equal(cpu_map, sched_domain_span(sd)))
 				break;
 		}
+
+		while (sd->child)
+			sd = sd->child;
+
+		*per_cpu_ptr(d.sd, i) = sd;
 	}
 
 	/* Build the groups for the domains */
@@ -7029,7 +7022,6 @@ void __init sched_init(void)
 		rq->online = 0;
 		rq->idle_stamp = 0;
 		rq->avg_idle = 2*sysctl_sched_migration_cost;
-		rq->max_idle_balance_cost = sysctl_sched_migration_cost;
 
 		INIT_LIST_HEAD(&rq->cfs_tasks);
 
@@ -7774,12 +7766,7 @@ static int tg_set_cfs_bandwidth(struct task_group *tg, u64 period, u64 quota)
 
 	runtime_enabled = quota != RUNTIME_INF;
 	runtime_was_enabled = cfs_b->quota != RUNTIME_INF;
-	/*
-	 * If we need to toggle cfs_bandwidth_used, off->on must occur
-	 * before making related changes, and on->off must occur afterwards
-	 */
-	if (runtime_enabled && !runtime_was_enabled)
-		cfs_bandwidth_usage_inc();
+	account_cfs_bandwidth_used(runtime_enabled, runtime_was_enabled);
 	raw_spin_lock_irq(&cfs_b->lock);
 	cfs_b->period = ns_to_ktime(period);
 	cfs_b->quota = quota;
@@ -7805,8 +7792,6 @@ static int tg_set_cfs_bandwidth(struct task_group *tg, u64 period, u64 quota)
 			unthrottle_cfs_rq(cfs_rq);
 		raw_spin_unlock_irq(&rq->lock);
 	}
-	if (runtime_was_enabled && !runtime_enabled)
-		cfs_bandwidth_usage_dec();
 out_unlock:
 	mutex_unlock(&cfs_constraints_mutex);
 
