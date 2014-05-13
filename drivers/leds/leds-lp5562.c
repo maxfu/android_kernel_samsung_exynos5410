@@ -593,42 +593,6 @@ static ssize_t lp5562_store_blink(struct device *dev,
 	on = min_t(unsigned int, on, MAX_BLINK_TIME);
 	off = min_t(unsigned int, off, MAX_BLINK_TIME);
 
-	if (!rgb || !on)
-		return len;
-
-	mutex_lock(&chip->lock);
-
-	/* make on-time pattern */
-	lp5562_set_pwm_cmd(&ptn, rgb);
-	lp5562_set_wait_cmd(&ptn, on, jump_pc);
-	jump_pc = ptn.pc_r / 2; /* 16bit size program counter */
-
-	/* make off-time pattern */
-	lp5562_set_pwm_cmd(&ptn, 0);
-	lp5562_set_wait_cmd(&ptn, off, jump_pc);
-
-	/* run the pattern */
-	lp5562_run_led_pattern(chip, &ptn);
-
-	printk(KERN_DEBUG "led_blink is called, Color:0x%X Brightness:%i\n",
-			rgb, LED_DYNAMIC_CURRENT);
-
-	mutex_unlock(&chip->lock);
-
-	return len;
-}
-
-void lp5562_blink(int rgb, int on, int off)
-{
-	struct lp55xx_chip *chip = g_chip;
-	struct lp5562_pattern_data ptn = { };
-	u8 jump_pc = 0;
-
-	lp5562_stop_engine(chip);
-
-	on = min_t(unsigned int, on, MAX_BLINK_TIME);
-	off = min_t(unsigned int, off, MAX_BLINK_TIME);
-
 	if (!rgb)
 		return len;
 
@@ -670,6 +634,42 @@ void lp5562_blink(int rgb, int on, int off)
 	lp5562_set_wait3_cmd(&ptn, off);
 
 run:
+	/* run the pattern */
+	lp5562_run_led_pattern(chip, &ptn);
+
+	printk(KERN_DEBUG "led_blink is called, Color:0x%X Brightness:%i\n",
+			rgb, LED_DYNAMIC_CURRENT);
+
+	mutex_unlock(&chip->lock);
+
+	return len;
+}
+
+void lp5562_blink(int rgb, int on, int off)
+{
+	struct lp55xx_chip *chip = g_chip;
+	struct lp5562_pattern_data ptn = { };
+	u8 jump_pc = 0;
+
+	lp5562_stop_engine(chip);
+
+	on = min_t(unsigned int, on, MAX_BLINK_TIME);
+	off = min_t(unsigned int, off, MAX_BLINK_TIME);
+
+	if (!rgb || !on || !off)
+		return;
+
+	mutex_lock(&chip->lock);
+
+	/* make on-time pattern */
+	lp5562_set_pwm_cmd(&ptn, rgb);
+	lp5562_set_wait_cmd(&ptn, on, jump_pc);
+	jump_pc = ptn.pc_r / 2; /* 16bit size program counter */
+
+	/* make off-time pattern */
+	lp5562_set_pwm_cmd(&ptn, 0);
+	lp5562_set_wait_cmd(&ptn, off, jump_pc);
+
 	/* run the pattern */
 	lp5562_run_led_pattern(chip, &ptn);
 
