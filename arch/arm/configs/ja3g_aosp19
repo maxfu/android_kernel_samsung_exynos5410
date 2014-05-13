@@ -1,10 +1,5 @@
 # ja3g_aosp19 settings
 
-#
-# GCOV-based kernel profiling
-#
-# CONFIG_MODULES is not set
-#
 # SCSI support type (disk, tape, CD-ROM)
 #
 # CONFIG_SCSI_WAIT_SCAN is not set
@@ -24,3 +19,7 @@ CONFIG_CIFS=y
 # Random Number Generation
 #
 CONFIG_CRYPTO_ANSI_CPRNG=y
+#
+# USB Driver
+#
+# CONFIG_USB_ANDROID_SAMSUNG_MTP is not set
