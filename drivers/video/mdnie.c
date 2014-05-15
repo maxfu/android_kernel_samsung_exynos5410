@@ -866,11 +866,6 @@ static int mdnie_set_pwm(struct mdnie_info *mdnie, unsigned int br)
 	return ret;
 }
 
-static struct miscdevice mdnie_device = {
-	.minor = MISC_DYNAMIC_MINOR,
-	.name = "mdnie",
-};
-
 static int mdnie_set_cabc_pwm(struct mdnie_info *mdnie, unsigned int br)
 {
 	int i;
@@ -925,6 +920,11 @@ static const struct backlight_ops mdnie_backlight_ops = {
 	.update_status = mdnie_set_br,
 };
 #endif
+
+static struct miscdevice mdnie_device = {
+	.minor = MISC_DYNAMIC_MINOR,
+	.name = "mdnie",
+};
 
 static int mdnie_probe(struct platform_device *pdev)
 {
