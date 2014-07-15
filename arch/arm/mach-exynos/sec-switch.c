@@ -434,10 +434,8 @@ void max77803_muic_mhl_cb(int attached)
 {
 	if (attached == MAX77803_MUIC_ATTACHED) {
 		pr_info("MHL Attached !!\n");
-		acc_notify(MHL_ATTACHED);
 	} else {
 		pr_info("MHL Detached !!\n");
-		acc_notify(MHL_DETTACHED);
 	}
 }
 #endif
