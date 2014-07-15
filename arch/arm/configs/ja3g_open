@@ -1,4 +1,0 @@
-# ja3g_open settings
-
-CONFIG_WLAN_REGION_CODE=300
-CONFIG_RTC_ALARM_BOOT=y

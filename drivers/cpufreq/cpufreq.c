@@ -590,8 +590,6 @@ cpufreq_freq_attr_rw(scaling_min_freq);
 cpufreq_freq_attr_rw(scaling_max_freq);
 cpufreq_freq_attr_rw(scaling_governor);
 cpufreq_freq_attr_rw(scaling_setspeed);
-cpufreq_freq_attr_rw(UV_mV_table);
-cpufreq_freq_attr_rw(UV_uV_table);
 
 static struct attribute *default_attrs[] = {
 	&cpuinfo_min_freq.attr,
@@ -605,8 +603,6 @@ static struct attribute *default_attrs[] = {
 	&scaling_driver.attr,
 	&scaling_available_governors.attr,
 	&scaling_setspeed.attr,
-	&UV_mV_table.attr,
-	&UV_uV_table.attr,
 	NULL
 };
 
@@ -1640,7 +1636,6 @@ int cpufreq_get_policy(struct cpufreq_policy *policy, unsigned int cpu)
 }
 EXPORT_SYMBOL(cpufreq_get_policy);
 
-extern void exynos_enforce_policy(struct cpufreq_policy *policy);
 
 /*
  * data   : current policy.
@@ -1661,8 +1656,6 @@ static int __cpufreq_set_policy(struct cpufreq_policy *data,
 		ret = -EINVAL;
 		goto error_out;
 	}
-
-	exynos_enforce_policy(policy);
 
 	/* verify the cpu speed can be set within this limit */
 	ret = cpufreq_driver->verify(policy);

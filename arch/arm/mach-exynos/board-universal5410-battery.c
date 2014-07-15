@@ -137,16 +137,6 @@ static int sec_bat_is_lpm_check(char *str)
 }
 __setup("androidboot.mode=", sec_bat_is_lpm_check);
 
-static int legacy_sec_bat_is_lpm_check(char *str)
-{
-	get_option(&str, &lpcharge);
-
-	pr_info("%s: Low power charging mode: %d\n", __func__, lpcharge);
-
-	return lpcharge;
-}
-__setup("lpcharge=", legacy_sec_bat_is_lpm_check);
-
 static bool sec_bat_is_lpm(void)
 {
 	return lpcharge;
@@ -192,10 +182,6 @@ static bool sec_bat_check_jig_status(void)
 
 }
 
-int mhl_class_usb = 300;
-int mhl_class_500 = 400;
-int mhl_class_900 = 700;
-int mhl_class_1500 = 1300;
 
 static int sec_bat_get_cable_from_extended_cable_type(
 	int input_extended_cable_type)
@@ -260,23 +246,23 @@ static int sec_bat_get_cable_from_extended_cable_type(
 				break;
 			case ONLINE_POWER_TYPE_MHL_500:
 				cable_type = POWER_SUPPLY_TYPE_MISC;
-				charge_current_max = mhl_class_500;
-				charge_current = mhl_class_500;
+				charge_current_max = 400;
+				charge_current = 400;
 				break;
 			case ONLINE_POWER_TYPE_MHL_900:
 				cable_type = POWER_SUPPLY_TYPE_MISC;
-				charge_current_max = mhl_class_900;
-				charge_current = mhl_class_900;
+				charge_current_max = 700;
+				charge_current = 700;
 				break;
 			case ONLINE_POWER_TYPE_MHL_1500:
 				cable_type = POWER_SUPPLY_TYPE_MISC;
-				charge_current_max = mhl_class_1500;
-				charge_current = mhl_class_1500;
+				charge_current_max = 1300;
+				charge_current = 1300;
 				break;
 			case ONLINE_POWER_TYPE_USB:
 				cable_type = POWER_SUPPLY_TYPE_USB;
-				charge_current_max = mhl_class_usb;
-				charge_current = mhl_class_usb;
+				charge_current_max = 300;
+				charge_current = 300;
 				break;
 			default:
 				cable_type = cable_main;

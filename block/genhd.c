@@ -622,27 +622,6 @@ void add_disk(struct gendisk *disk)
 	retval = sysfs_create_link(&disk_to_dev(disk)->kobj, &bdi->dev->kobj,
 				   "bdi");
 	WARN_ON(retval);
-	
-		/*
-	 * Limit default readahead size for small devices.
-	 *        disk size    readahead size
-	 *               1M                8k
-	 *               4M               16k
-	 *              16M               32k
-	 *              64M               64k
-	 *             256M              128k
-	 *               1G              256k
-	 *               4G              512k
-	 *              16G             1024k
-	 *              64G             2048k
-	 *             256G             4096k
-	 */
-
-	if (get_capacity(disk)) {
-		unsigned long size = get_capacity(disk) >> 9;
-		size = 1UL << (ilog2(size) / 2);
-		bdi->ra_pages = min(bdi->ra_pages, size);
-	}
 
 	disk_add_events(disk);
 }
@@ -1522,11 +1501,9 @@ static void __disk_unblock_events(struct gendisk *disk, bool check_now)
 	intv = disk_events_poll_jiffies(disk);
 	set_timer_slack(&ev->dwork.timer, intv / 4);
 	if (check_now)
-		queue_delayed_work(system_freezable_power_efficient_wq,
-				&ev->dwork, 0);
+		queue_delayed_work(system_nrt_freezable_wq, &ev->dwork, 0);
 	else if (intv)
-		queue_delayed_work(system_freezable_power_efficient_wq,
-				&ev->dwork, intv);
+		queue_delayed_work(system_nrt_freezable_wq, &ev->dwork, intv);
 out_unlock:
 	spin_unlock_irqrestore(&ev->lock, flags);
 }
@@ -1570,8 +1547,7 @@ void disk_flush_events(struct gendisk *disk, unsigned int mask)
 	ev->clearing |= mask;
 	if (!ev->block) {
 		cancel_delayed_work(&ev->dwork);
-		queue_delayed_work(system_freezable_power_efficient_wq,
-				&ev->dwork, 0);
+		queue_delayed_work(system_nrt_freezable_wq, &ev->dwork, 0);
 	}
 	spin_unlock_irq(&ev->lock);
 }
@@ -1648,8 +1624,7 @@ static void disk_events_workfn(struct work_struct *work)
 
 	intv = disk_events_poll_jiffies(disk);
 	if (!ev->block && intv)
-		queue_delayed_work(system_freezable_power_efficient_wq,
-				&ev->dwork, intv);
+		queue_delayed_work(system_nrt_freezable_wq, &ev->dwork, intv);
 
 	spin_unlock_irq(&ev->lock);
 
