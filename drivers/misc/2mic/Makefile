@@ -1,1 +1,0 @@
-obj-$(CONFIG_2MIC_AUDIENCE_ES325)	+= es325.o
