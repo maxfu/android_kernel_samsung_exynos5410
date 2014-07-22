@@ -1,0 +1,24 @@
+#
+# General setup
+#
+CONFIG_LOCALVERSION="-MaxFour"
+# CONFIG_LOCALVERSION_AUTO is not set
+# CONFIG_KERNEL_GZIP is not set
+CONFIG_KERNEL_LZMA=y
+#
+# GCOV-based kernel profiling
+#
+CONFIG_MODVERSIONS=y
+#
+# EXYNOS SoCs
+#
+# CONFIG_ASV_MARGIN_TEST is not set
+#
+# Kernel Features
+#
+CONFIG_KSM=y
+CONFIG_UKSM=y
+#
+# Library routines
+#
+CONFIG_DECOMPRESS_LZMA=y
