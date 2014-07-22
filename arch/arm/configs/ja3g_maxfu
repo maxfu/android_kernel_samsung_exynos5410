@@ -6,6 +6,11 @@ CONFIG_LOCALVERSION="-MaxFour"
 # CONFIG_KERNEL_GZIP is not set
 CONFIG_KERNEL_LZMA=y
 #
+# RCU Subsystem
+#
+# CONFIG_RD_GZIP is not set
+CONFIG_RD_LZMA=y
+#
 # GCOV-based kernel profiling
 #
 CONFIG_MODVERSIONS=y
