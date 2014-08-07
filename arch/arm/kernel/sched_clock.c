@@ -46,11 +46,10 @@ static inline u64 cyc_to_ns(u64 cyc, u32 mult, u32 shift)
 	return (cyc * mult) >> shift;
 }
 
-unsigned long long notrace sched_clock(void)
+static unsigned long long cyc_to_sched_clock(u32 cyc, u32 mask)
 {
 	u64 epoch_ns;
 	u32 epoch_cyc;
-	u32 cyc;
 
 	if (cd.suspended)
 		return cd.epoch_ns;
@@ -69,9 +68,7 @@ unsigned long long notrace sched_clock(void)
 		smp_rmb();
 	} while (epoch_cyc != cd.epoch_cyc_copy);
 
-	cyc = read_sched_clock();
-	cyc = (cyc - epoch_cyc) & sched_clock_mask;
-	return epoch_ns + cyc_to_ns(cyc, cd.mult, cd.shift);
+	return epoch_ns + cyc_to_ns((cyc - epoch_cyc) & mask, cd.mult, cd.shift);
 }
 
 /*
@@ -161,6 +158,12 @@ void __init setup_sched_clock(u32 (*read)(void), int bits, unsigned long rate)
 	cd.epoch_ns = 0;
 
 	pr_debug("Registered %pF as sched_clock source\n", read);
+}
+
+unsigned long long notrace sched_clock(void)
+{
+	u32 cyc = read_sched_clock();
+	return cyc_to_sched_clock(cyc, sched_clock_mask);
 }
 
 void __init sched_clock_postinit(void)
